@@ -1,83 +1,59 @@
 # x402 Production Integration
 
-This repo currently includes a dependency-free AgentSpec service so the inspection logic can be run and tested locally.
+AgentSpec now targets a Vercel-only MVP:
 
-For production, protect paid routes with the official x402 middleware and publish Bazaar discovery metadata.
-
-## Verified Integration Requirements
-
-Based on the official x402/CDP documentation:
-
-- x402 sellers expose paid HTTP resources that return `402 Payment Required` until a valid payment is supplied.
-- A facilitator verifies and settles the payment.
-- Bazaar discovery metadata should include enough schema and endpoint information for agents to discover and call the resource.
-- Coinbase CDP Bazaar discovery indexes resources after paid resources are successfully settled through the CDP Facilitator.
-
-Official docs:
-
-- https://docs.x402.org/
-- https://docs.x402.org/getting-started/quickstart-for-sellers
-- https://docs.cdp.coinbase.com/x402/bazaar
+- Next.js App Router route handlers for the landing page and paid API.
+- `src/lib/x402-middleware.ts` for x402 challenge, Coinbase Facilitator verify, handler execution, and settlement.
+- Coinbase CDP Facilitator on Base mainnet.
+- Vercel function `maxDuration` set to 60 seconds in `vercel.json`.
 
 ## Environment
 
 ```bash
-AGENTSPEC_PAYMENT_MODE=x402
-AGENTSPEC_PAY_TO=0xYourWalletAddress
-AGENTSPEC_X402_NETWORK=base-sepolia
-AGENTSPEC_X402_FACILITATOR_URL=https://x402.org/facilitator
+AGENTSPEC_PAYMENT_MODE=on
+AGENTSPEC_PAY_TO=0xYourReceivingWallet
+AGENTSPEC_X402_FACILITATOR_URL=https://api.cdp.coinbase.com/platform/v2/x402
+AGENTSPEC_X402_NETWORK=eip155:8453
+AGENTSPEC_X402_ASSET=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+AGENTSPEC_X402_ASSET_SYMBOL=USDC
+CDP_API_KEY_ID=...
+CDP_API_KEY_SECRET=...
 ```
 
-Use testnet first. Do not point production traffic at mainnet until the paid resource has been tested end to end.
+`AGENTSPEC_PAY_TO` is the public receiving address. It is not a private key.
 
-## Route Pricing
+Base mainnet USDC uses EIP-3009 with this EIP-712 domain:
+
+```json
+{
+  "name": "USD Coin",
+  "version": "2"
+}
+```
+
+The middleware includes that domain in the x402 payment requirements so AgentCash and other x402 clients can sign the authorization.
+
+## Paid Routes
 
 See `src/x402-config.js`.
 
-Initial pricing:
+- `POST /inspect/openapi`: `0.03 USDC`
+- `POST /inspect/mcp`: `0.03 USDC`
+- `POST /generate/bazaar-metadata`: `0.05 USDC`
+- `POST /score/agent-readiness`: `0.02 USDC`
 
-- `/inspect/openapi`: `0.03 USDC`
-- `/inspect/mcp`: `0.03 USDC`
-- `/generate/bazaar-metadata`: `0.05 USDC`
-- `/score/agent-readiness`: `0.02 USDC`
+## Verified Mainnet Smoke
 
-## Production Adapter Shape
+The local implementation has been tested end to end on Base mainnet:
 
-Keep the current pure functions:
+- payer: `REDACTED_PAYER_ADDRESS`
+- payTo: `REDACTED_PAYTO_ADDRESS`
+- route: `POST /inspect/openapi`
+- amount: `0.03 USDC`
+- transaction: `REDACTED_TX_HASH`
 
-- `inspectOpenApi`
-- `inspectMcp`
-- `generateBazaarMetadata`
+## Vercel Notes
 
-Then mount them behind the official x402 middleware in the runtime framework you deploy with.
+Deploy as a standard Next.js project. Keep landing and API together for MVP.
 
-Pseudo-shape:
-
-```js
-import express from "express";
-import { paymentMiddleware } from "x402-express";
-import { inspectOpenApi, inspectMcp, generateBazaarMetadata } from "./src/inspect.js";
-
-const app = express();
-app.use(express.json({ limit: "1mb" }));
-
-app.use(paymentMiddleware(
-  process.env.AGENTSPEC_PAY_TO,
-  {
-    "POST /inspect/openapi": "$0.03",
-    "POST /inspect/mcp": "$0.03",
-    "POST /generate/bazaar-metadata": "$0.05",
-    "POST /score/agent-readiness": "$0.02"
-  },
-  {
-    url: process.env.AGENTSPEC_X402_FACILITATOR_URL,
-    network: process.env.AGENTSPEC_X402_NETWORK
-  }
-));
-
-app.post("/inspect/openapi", (req, res) => res.json(inspectOpenApi(req.body)));
-app.post("/inspect/mcp", (req, res) => res.json(inspectMcp(req.body)));
-app.post("/generate/bazaar-metadata", (req, res) => res.json(generateBazaarMetadata(req.body)));
-```
-
-Before implementing this adapter, re-check the exact package name and middleware signature against the current official docs. The dependency-free service avoids locking the repo to a stale SDK surface.
+If a route exceeds 60 seconds, requires persistent WebSockets, or needs stateful server memory, revisit the architecture. Current inspection endpoints respond well under the limit.

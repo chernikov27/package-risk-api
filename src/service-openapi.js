@@ -5,7 +5,7 @@ export function serviceOpenApi(baseUrl = "http://localhost:4020") {
     openapi: "3.1.0",
     info: {
       title: "AgentSpec API",
-      version: "0.1.0",
+      version: "0.2.0",
       description: "Inspect OpenAPI specs, MCP tools, and API docs, then generate agent-ready x402 Bazaar metadata."
     },
     servers: [{ url: baseUrl }],
@@ -34,6 +34,25 @@ export function serviceOpenApi(baseUrl = "http://localhost:4020") {
           }
         }
       },
+      "/x402/routes": {
+        get: {
+          operationId: "listX402Routes",
+          summary: "List AgentSpec paid route metadata.",
+          responses: {
+            "200": {
+              description: "Paid route catalog and current payment configuration.",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    additionalProperties: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       ...Object.fromEntries(X402_ROUTES.map(route => [
         route.path,
         {
@@ -41,6 +60,12 @@ export function serviceOpenApi(baseUrl = "http://localhost:4020") {
             operationId: route.path.replace(/^\//, "").replace(/[^a-z0-9]+/gi, "_"),
             summary: route.description,
             description: `${route.description} Price suggestion: ${route.price} ${route.currency} per call.`,
+            "x-agentspec-pricing": {
+              amount: route.price,
+              currency: route.currency,
+              unit: "per call",
+              category: route.category
+            },
             requestBody: {
               required: true,
               content: {
@@ -69,7 +94,36 @@ export function serviceOpenApi(baseUrl = "http://localhost:4020") {
                 }
               },
               "402": {
-                description: "Payment required when x402 payment mode is enabled."
+                description: "Payment required when x402 payment mode is enabled.",
+                headers: {
+                  "PAYMENT-REQUIRED": {
+                    description: "Base64-encoded x402 payment requirements JSON.",
+                    schema: { type: "string" }
+                  }
+                },
+                content: {
+                  "application/json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        error: { type: "string" },
+                        x402Version: { type: "integer" },
+                        accepts: {
+                          type: "array",
+                          items: {
+                            type: "object",
+                            additionalProperties: true
+                          }
+                        }
+                      },
+                      required: ["error", "x402Version", "accepts"],
+                      additionalProperties: true
+                    }
+                  }
+                }
+              },
+              "501": {
+                description: "Payment signature was supplied, but local no-dependency settlement is not configured."
               }
             }
           }

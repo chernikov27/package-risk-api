@@ -1,15 +1,35 @@
 {
   "name": "agentspec",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "AgentSpec turns APIs into agent-ready x402 services.",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "AGENTSPEC_PAYMENT_MODE=off node src/server.js",
-    "dev:402": "AGENTSPEC_PAYMENT_MODE=dev-402 node src/server.js",
+    "dev": "next dev",
+    "dev:402": "AGENTSPEC_PAYMENT_MODE=dev-402 next dev",
+    "build": "next build",
+    "start": "next start",
+    "start:node": "node src/server.js",
+    "dev:node": "AGENTSPEC_PAYMENT_MODE=off node src/server.js",
+    "dev:402:node": "AGENTSPEC_PAYMENT_MODE=dev-402 node src/server.js",
+    "start:x402:node": "AGENTSPEC_PAYMENT_MODE=on node src/server.js",
     "smoke": "node scripts/smoke.js",
+    "smoke:402": "node scripts/smoke-payment.js",
+    "check:x402-env": "node scripts/check-x402-env.js",
+    "check:cdp-facilitator": "node scripts/check-cdp-facilitator.js",
+    "create:cdp-pay-to": "node scripts/create-cdp-pay-to.js",
     "test": "node --test"
+  },
+  "dependencies": {
+    "next": "^16.0.7",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=20"

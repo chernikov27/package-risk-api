@@ -7,33 +7,29 @@ AgentSpec inspects OpenAPI specs, MCP tools, and API docs, then generates readin
 ## Run Locally
 
 ```bash
+npm install
 npm run dev
 ```
 
-The API listens on:
+The Next.js app starts on:
 
 ```text
-http://localhost:4020
+http://localhost:3000
 ```
 
-No external dependencies are required for the current MVP.
+The Vercel/App Router API routes are available at the same public paths used by agents:
 
-Recommended workflow:
-
-1. Open Terminal 1 and start the server.
-2. Leave Terminal 1 open.
-3. Open Terminal 2 and run checks with `curl` or the smoke test.
-
-Using the portable Node runtime directly:
-
-```bash
-"/Users/sergejcernikov/Desktop/тест клод/.codex-runtime/node-v24.15.0-darwin-arm64/bin/node" src/server.js
+```text
+/inspect/openapi
+/inspect/mcp
+/generate/bazaar-metadata
+/score/agent-readiness
 ```
 
-Then in a second terminal:
+The previous plain Node server is still available for local fallback checks:
 
 ```bash
-"/Users/sergejcernikov/Desktop/тест клод/.codex-runtime/node-v24.15.0-darwin-arm64/bin/node" scripts/smoke.js
+npm run start:node
 ```
 
 ## Test
@@ -53,7 +49,7 @@ Using portable Node directly:
 Inspect OpenAPI:
 
 ```bash
-curl -s http://localhost:4020/inspect/openapi \
+curl -s http://localhost:3000/inspect/openapi \
   -H 'content-type: application/json' \
   --data @examples/openapi-weather.json
 ```
@@ -61,7 +57,7 @@ curl -s http://localhost:4020/inspect/openapi \
 Inspect MCP tools:
 
 ```bash
-curl -s http://localhost:4020/inspect/mcp \
+curl -s http://localhost:3000/inspect/mcp \
   -H 'content-type: application/json' \
   --data @examples/mcp-tools.json
 ```
@@ -69,14 +65,47 @@ curl -s http://localhost:4020/inspect/mcp \
 Generate Bazaar metadata from an existing report:
 
 ```bash
-curl -s http://localhost:4020/generate/bazaar-metadata \
+curl -s http://localhost:3000/generate/bazaar-metadata \
   -H 'content-type: application/json' \
   --data '{"service":{"name":"Weather Utility","path":"/forecast","method":"GET","description":"Read-only forecast lookup for agents."}}'
 ```
 
-## Local 402 Simulation
+## Payment Modes
 
-Run:
+AgentSpec has three runtime modes:
+
+- `AGENTSPEC_PAYMENT_MODE=off`: default local demo mode, no paid-route gate.
+- `AGENTSPEC_PAYMENT_MODE=dev-402`: local x402-shaped simulation. Paid routes return `402 Payment Required` unless you pass the dev bypass header.
+- `AGENTSPEC_PAYMENT_MODE=on` or `AGENTSPEC_PAYMENT_MODE=x402`: paid routes return a real x402 `402` challenge when no `PAYMENT-SIGNATURE` is supplied, then verify and settle through Coinbase CDP Facilitator.
+
+Base mainnet defaults:
+
+```bash
+AGENTSPEC_X402_FACILITATOR_URL=https://api.cdp.coinbase.com/platform/v2/x402
+AGENTSPEC_X402_NETWORK=eip155:8453
+AGENTSPEC_X402_ASSET=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+```
+
+For Coinbase CDP Facilitator, also configure:
+
+```bash
+CDP_API_KEY_ID=...
+CDP_API_KEY_SECRET=...
+```
+
+Use `.env.example` as the template. Real values belong in `.env`, which is ignored by git:
+
+```bash
+cp .env.example .env
+npm run check:x402-env
+npm run check:cdp-facilitator
+```
+
+`AGENTSPEC_PAY_TO` must be a public EVM address you control, for example `0x...` with 40 hex characters after `0x`. `CDP_API_KEY_SECRET` is the CDP Secret API Key value, usually an Ed25519 base64 string; it is not a wallet private key.
+
+For a quick facilitator connectivity check, you can also set a temporary `CDP_BEARER_TOKEN` instead of generating JWTs from `CDP_API_KEY_ID` and `CDP_API_KEY_SECRET`. Bearer tokens expire quickly, so this is useful only for local testing.
+
+Local 402 simulation in Next:
 
 ```bash
 npm run dev:402
@@ -88,11 +117,51 @@ Then paid endpoints return `402` unless you pass:
 x-agentspec-dev-payment: paid
 ```
 
-This is only a local development simulation. Production settlement should use the official x402 middleware and facilitator.
+The `402` response includes:
+
+- HTTP status `402 Payment Required`
+- `PAYMENT-REQUIRED` response header with base64-encoded x402 requirements JSON
+- JSON body with `accepts`, price, route, network, and facilitator settings
+
+Run the legacy payment smoke test against the plain Node server with `dev:402:node`:
+
+```bash
+npm run dev:402:node
+npm run smoke:402
+```
+
+Production settlement is implemented in `src/lib/x402-middleware.ts` for Next.js App Router routes and uses the Coinbase CDP Facilitator calls in `src/cdp-facilitator.js`.
+
+## Vercel Deployment
+
+Deploy this repo as a Next.js project on Vercel. The paid API routes and landing page live in the same app. Function duration is configured in `vercel.json`:
+
+```json
+{
+  "functions": {
+    "src/app/**/route.js": {
+      "maxDuration": 60
+    }
+  }
+}
+```
+
+Required production environment variables:
+
+```bash
+AGENTSPEC_PAYMENT_MODE=on
+AGENTSPEC_PAY_TO=0xYourReceivingWallet
+AGENTSPEC_X402_FACILITATOR_URL=https://api.cdp.coinbase.com/platform/v2/x402
+AGENTSPEC_X402_NETWORK=eip155:8453
+AGENTSPEC_X402_ASSET=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+AGENTSPEC_X402_ASSET_SYMBOL=USDC
+CDP_API_KEY_ID=...
+CDP_API_KEY_SECRET=...
+```
 
 ## Troubleshooting
 
-If server startup says:
+If the legacy Node server startup says:
 
 ```text
 address already in use 127.0.0.1:4020

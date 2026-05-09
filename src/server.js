@@ -3,7 +3,8 @@ import { readFile } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 import { pathToFileURL } from "node:url";
 import { generateBazaarMetadata, inspectMcp, inspectOpenApi } from "./inspect.js";
-import { findPaidRoute, maybeRequirePayment, paymentConfig, X402_ROUTES } from "./x402-config.js";
+import { loadDotEnv } from "./load-env.js";
+import { authorizePayment, findPaidRoute, paymentConfig, settleAuthorizedPayment, X402_ROUTES } from "./x402-config.js";
 import { serviceOpenApi } from "./service-openapi.js";
 
 const DEFAULT_PORT = 4020;
@@ -80,41 +81,41 @@ async function routeRequest(request, response, env) {
   }
 
   const paidRoute = findPaidRoute(method, url.pathname);
-  const payment = maybeRequirePayment(request, paidRoute, env);
+  const payment = await authorizePayment(request, paidRoute, env);
   if (!payment.ok) {
-    sendJson(response, payment.status, payment.body);
+    sendJson(response, payment.status, payment.body, payment.headers);
     return;
   }
 
   if (method === "POST" && url.pathname === "/inspect/openapi") {
     const body = await readJsonBody(request);
-    sendJson(response, 200, inspectOpenApi(body));
+    await sendPaidJson(response, 200, inspectOpenApi(body), payment);
     return;
   }
 
   if (method === "POST" && url.pathname === "/inspect/mcp") {
     const body = await readJsonBody(request);
-    sendJson(response, 200, inspectMcp(body));
+    await sendPaidJson(response, 200, inspectMcp(body), payment);
     return;
   }
 
   if (method === "POST" && url.pathname === "/generate/bazaar-metadata") {
     const body = await readJsonBody(request);
-    sendJson(response, 200, generateBazaarMetadata(body));
+    await sendPaidJson(response, 200, generateBazaarMetadata(body), payment);
     return;
   }
 
   if (method === "POST" && url.pathname === "/score/agent-readiness") {
     const body = await readJsonBody(request);
     const report = body.type === "mcp" || Array.isArray(body.tools) ? inspectMcp(body) : inspectOpenApi(body);
-    sendJson(response, 200, {
+    await sendPaidJson(response, 200, {
       type: report.type,
       score: report.score,
       grade: report.grade,
       summary: report.summary,
       riskCount: report.risks.length,
       recommendationCount: report.recommendations.length
-    });
+    }, payment);
     return;
   }
 
@@ -154,15 +155,30 @@ function readJsonBody(request) {
   });
 }
 
-function sendJson(response, status, body) {
+function sendJson(response, status, body, headers = {}) {
   const payload = status === 204 ? "" : JSON.stringify(body, null, 2);
   response.writeHead(status, {
     "content-type": "application/json; charset=utf-8",
     "access-control-allow-origin": "*",
     "access-control-allow-methods": "GET,POST,OPTIONS",
-    "access-control-allow-headers": "content-type,x-agentspec-dev-payment"
+    "access-control-allow-headers": "content-type,x-agentspec-dev-payment,payment-signature,x-payment",
+    "access-control-expose-headers": "payment-required,payment-response",
+    ...headers
   });
   response.end(payload);
+}
+
+async function sendPaidJson(response, status, body, payment) {
+  const settlement = await settleAuthorizedPayment(payment);
+  if (!settlement.ok) {
+    sendJson(response, settlement.status, settlement.body, settlement.headers);
+    return;
+  }
+
+  sendJson(response, status, body, {
+    ...(payment.headers ?? {}),
+    ...(settlement.headers ?? {})
+  });
 }
 
 async function tryServeStatic(pathname, response) {
@@ -210,6 +226,8 @@ function baseUrlFromRequest(request) {
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  loadDotEnv();
+
   const port = Number(process.env.PORT ?? DEFAULT_PORT);
   const host = process.env.HOST ?? "127.0.0.1";
   const server = createServer();
