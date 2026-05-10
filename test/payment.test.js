@@ -65,6 +65,11 @@ test("payment mode on returns an x402 payment challenge without a signature", ()
   assert.equal(decoded.accepts[0].amount, "30000");
   assert.equal(decoded.accepts[0].payTo, "0xAgentSpecWallet");
   assert.equal(decoded.accepts[0].resource, "http://127.0.0.1:4020/inspect/openapi");
+  assert.equal(decoded.extensions.bazaar.info.input.type, "http");
+  assert.equal(decoded.extensions.bazaar.info.input.method, "POST");
+  assert.equal(decoded.extensions.bazaar.info.input.bodyType, "json");
+  assert.equal(decoded.extensions.bazaar.info.output.type, "json");
+  assert.equal(decoded.extensions.bazaar.schema.$schema, "https://json-schema.org/draft/2020-12/schema");
 });
 
 test("payment signature is decoded for facilitator verification", () => {
@@ -88,6 +93,7 @@ test("payment signature is decoded for facilitator verification", () => {
   assert.deepEqual(result.paymentPayload, paymentPayload);
   assert.equal(result.paymentRequirements.amount, "30000");
   assert.equal(result.paymentRequirements.network, "eip155:84532");
+  assert.ok(result.paymentRequirements.extensions.bazaar);
 });
 
 test("dev-402 mode supports a local paid-header bypass", () => {

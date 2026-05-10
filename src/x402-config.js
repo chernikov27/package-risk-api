@@ -243,6 +243,7 @@ export async function settleAuthorizedPayment(payment) {
 export function buildPaymentRequirements(request, route, config = paymentConfig()) {
   const amount = amountToAtomicUnits(route.price, config.assetDecimals);
   const resourceUrl = resourceUrlFromRequest(request, route);
+  const bazaarExtension = buildBazaarExtension(route);
 
   return {
     x402Version: config.x402Version,
@@ -272,7 +273,10 @@ export function buildPaymentRequirements(request, route, config = paymentConfig(
           assetSymbol: config.assetSymbol
         }
       }
-    ]
+    ],
+    extensions: {
+      bazaar: bazaarExtension
+    }
   };
 }
 
@@ -395,7 +399,197 @@ function toFacilitatorPaymentRequirements(requirements) {
     amount: accepted.amount ?? accepted.maxAmountRequired,
     payTo: accepted.payTo,
     maxTimeoutSeconds: accepted.maxTimeoutSeconds,
-    extra: accepted.extra
+    extra: accepted.extra,
+    extensions: requirements.extensions
+  };
+}
+
+function buildBazaarExtension(route) {
+  const inputBody = bazaarInputBodyExample(route);
+  const outputExample = bazaarOutputExample(route);
+
+  return {
+    info: {
+      input: {
+        type: "http",
+        method: route.method,
+        bodyType: "json",
+        body: inputBody
+      },
+      output: {
+        type: "json",
+        example: outputExample
+      }
+    },
+    schema: {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      type: "object",
+      properties: {
+        input: {
+          type: "object",
+          properties: {
+            type: { type: "string", const: "http" },
+            method: { type: "string", enum: ["POST", "PUT", "PATCH"] },
+            bodyType: { type: "string", enum: ["json", "form-data", "text"] },
+            body: { type: "object" },
+            queryParams: {
+              type: "object",
+              additionalProperties: { type: "string" }
+            },
+            headers: {
+              type: "object",
+              additionalProperties: { type: "string" }
+            }
+          },
+          required: ["type", "method", "bodyType", "body"],
+          additionalProperties: false
+        },
+        output: {
+          type: "object",
+          properties: {
+            type: { type: "string" },
+            example: {}
+          },
+          required: ["type"]
+        }
+      },
+      required: ["input"]
+    }
+  };
+}
+
+function bazaarInputBodyExample(route) {
+  if (route.path === "/inspect/openapi") {
+    return {
+      spec: {
+        openapi: "3.1.0",
+        info: { title: "Weather Utility API", version: "1.0.0" },
+        paths: {
+          "/forecast": {
+            get: {
+              operationId: "getForecast",
+              summary: "Get a weather forecast by city.",
+              responses: {
+                "200": {
+                  description: "Forecast result.",
+                  content: {
+                    "application/json": {
+                      schema: { type: "object" },
+                      example: { city: "Paris", days: [] }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+  }
+
+  if (route.path === "/inspect/mcp") {
+    return {
+      name: "Repo Assistant MCP",
+      tools: [
+        {
+          name: "inspect_repository",
+          description: "Analyze a public GitHub repository and return detected stack.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              repoUrl: { type: "string" }
+            },
+            required: ["repoUrl"],
+            additionalProperties: false
+          }
+        }
+      ]
+    };
+  }
+
+  if (route.path === "/generate/bazaar-metadata") {
+    return {
+      report: {
+        type: "openapi",
+        name: "Weather Utility API",
+        score: 100,
+        grade: "A",
+        bazaarCandidates: [
+          {
+            name: "getForecast",
+            method: "GET",
+            path: "/forecast",
+            description: "Get a weather forecast by city.",
+            inputSchema: {
+              type: "object",
+              properties: { city: { type: "string" } },
+              required: ["city"]
+            },
+            outputExample: { status: 200, data: { city: "Paris" } }
+          }
+        ]
+      }
+    };
+  }
+
+  if (route.path === "/score/agent-readiness") {
+    return {
+      spec: {
+        openapi: "3.1.0",
+        info: { title: "Mini API", version: "1.0.0" },
+        paths: {
+          "/ping": {
+            get: {
+              operationId: "ping",
+              summary: "Ping service",
+              responses: {
+                "200": {
+                  description: "pong",
+                  content: {
+                    "application/json": {
+                      schema: { type: "object" },
+                      example: { ok: true }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+  }
+
+  return {};
+}
+
+function bazaarOutputExample(route) {
+  if (route.path === "/generate/bazaar-metadata") {
+    return {
+      name: "getForecast",
+      category: "developer-tools",
+      priceSuggestion: { amount: "0.03", currency: "USDC", unit: "per call" },
+      bazaarDraft: { discoverable: true }
+    };
+  }
+
+  if (route.path === "/score/agent-readiness") {
+    return {
+      type: "openapi",
+      score: 93,
+      grade: "A",
+      riskCount: 0,
+      recommendationCount: 2
+    };
+  }
+
+  return {
+    type: route.path.includes("mcp") ? "mcp" : "openapi",
+    score: 96,
+    grade: "A",
+    risks: [],
+    recommendations: [],
+    bazaarCandidates: []
   };
 }
 
