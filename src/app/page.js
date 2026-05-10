@@ -33,6 +33,10 @@ export default function HomePage() {
             <div className="hero-mark" aria-hidden="true"><span className="brand-mark" /></div>
             <p className="eyebrow">Discoverable. Understandable. Paid.</p>
             <h1>AgentSpec makes APIs ready for autonomous agents.</h1>
+            <div className="trust-badges" aria-label="AgentSpec trust signals">
+              <span className="trust-badge">Listed on Coinbase x402 Bazaar</span>
+              <span className="trust-badge">AgentCash-ready</span>
+            </div>
             <p className="support">A paid x402 microservice that scores endpoints, normalizes tool schemas, flags risk, and drafts Bazaar listings agents can evaluate.</p>
             <div className="hero-actions">
               <a className="button primary" href="#inspect">Inspect an API</a>

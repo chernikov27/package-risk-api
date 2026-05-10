@@ -259,6 +259,42 @@ h1 {
   letter-spacing: 0;
 }
 
+.trust-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: 650px;
+  margin: 0 0 22px;
+}
+
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  border: 1px solid rgba(0, 212, 200, 0.42);
+  border-radius: 999px;
+  background:
+    linear-gradient(120deg, rgba(0, 212, 200, 0.18), rgba(65, 241, 166, 0.1)),
+    rgba(2, 13, 33, 0.74);
+  box-shadow: 0 12px 30px rgba(0, 212, 200, 0.12);
+  color: #dffff8;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 780;
+  letter-spacing: 0;
+}
+
+.trust-badge::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  margin-right: 9px;
+  border-radius: 50%;
+  background: #41f1a6;
+  box-shadow: 0 0 16px rgba(65, 241, 166, 0.78);
+}
+
 .support {
   max-width: 650px;
   margin-bottom: 30px;
