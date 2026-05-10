@@ -6,7 +6,8 @@ export function serviceOpenApi(baseUrl = "http://localhost:4020") {
     info: {
       title: "AgentSpec API",
       version: "0.2.0",
-      description: "Inspect OpenAPI specs, MCP tools, and API docs, then generate agent-ready x402 Bazaar metadata."
+      description: "Inspect OpenAPI specs, MCP tools, and API docs, then generate agent-ready x402 Bazaar metadata.",
+      "x-guidance": "Use AgentSpec when you need to evaluate whether an API or MCP tool surface is ready for autonomous agents. Call POST /inspect/openapi with an OpenAPI document, POST /inspect/mcp with MCP tool metadata, POST /score/agent-readiness for a compact score, or POST /generate/bazaar-metadata to draft an x402 Bazaar listing payload."
     },
     servers: [{ url: baseUrl }],
     paths: {
@@ -65,6 +66,14 @@ export function serviceOpenApi(baseUrl = "http://localhost:4020") {
               currency: route.currency,
               unit: "per call",
               category: route.category
+            },
+            "x-payment-info": {
+              price: {
+                mode: "fixed",
+                currency: "USD",
+                amount: fixedUsdAmount(route.price)
+              },
+              protocols: [{ x402: {} }]
             },
             requestBody: {
               required: true,
@@ -131,4 +140,8 @@ export function serviceOpenApi(baseUrl = "http://localhost:4020") {
       ]))
     }
   };
+}
+
+function fixedUsdAmount(price) {
+  return Number(price).toFixed(6);
 }

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { generateKeyPairSync, randomBytes } from "node:crypto";
 import test from "node:test";
+import { serviceOpenApi } from "../src/service-openapi.js";
 import { generateCdpJwt } from "../src/cdp-auth.js";
 import {
   findPaidRoute,
@@ -118,6 +119,18 @@ test("payment config exposes enabled route settings", () => {
   assert.equal(config.network, "eip155:84532");
   assert.equal(config.asset, "0x036CbD53842c5426634e7929541eC2318f3dCF7e");
   assert.equal(config.assetSymbol, "USDC");
+});
+
+test("service OpenAPI exposes AgentCash x402 payment discovery metadata", () => {
+  const document = serviceOpenApi("https://agentspec-one.vercel.app");
+  const operation = document.paths["/inspect/openapi"].post;
+
+  assert.equal(document.info["x-guidance"].includes("POST /inspect/openapi"), true);
+  assert.equal(operation["x-payment-info"].price.mode, "fixed");
+  assert.equal(operation["x-payment-info"].price.currency, "USD");
+  assert.equal(operation["x-payment-info"].price.amount, "0.030000");
+  assert.deepEqual(operation["x-payment-info"].protocols, [{ x402: {} }]);
+  assert.equal(operation.responses["402"].description, "Payment required when x402 payment mode is enabled.");
 });
 
 test("generateCdpJwt creates an Ed25519 bearer token shape", () => {
