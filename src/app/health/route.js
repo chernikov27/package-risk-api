@@ -8,7 +8,7 @@ export const maxDuration = 60;
 export function GET() {
   return jsonResponse({
     ok: true,
-    service: "AgentSpec",
+    service: "DepScout",
     payment: paymentConfig()
   });
 }

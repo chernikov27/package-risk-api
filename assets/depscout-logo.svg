@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-labelledby="title desc">
+  <title id="title">DepScout selected logo source</title>
+  <desc id="desc">Selected Variant A logo source: a shield, package cube, and radar sweep for dependency risk scanning.</desc>
+  <defs>
+    <linearGradient id="shieldGradient" x1="118" y1="96" x2="522" y2="552" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#66e6ff"/>
+      <stop offset="0.48" stop-color="#35f2b0"/>
+      <stop offset="1" stop-color="#0fd0ff"/>
+    </linearGradient>
+    <linearGradient id="cubeGradient" x1="202" y1="210" x2="430" y2="454" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f8fbff"/>
+      <stop offset="0.52" stop-color="#66e6ff"/>
+      <stop offset="1" stop-color="#35f2b0"/>
+    </linearGradient>
+    <radialGradient id="glowGradient" cx="0" cy="0" r="1" gradientTransform="matrix(210 0 0 210 320 322)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#35f2b0" stop-opacity="0.42"/>
+      <stop offset="0.62" stop-color="#0fd0ff" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#071226" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.20 0 0 0 0 0.95 0 0 0 0 0.69 0 0 0 0.5 0"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="640" height="640" rx="128" fill="#071226"/>
+  <circle cx="320" cy="322" r="236" fill="url(#glowGradient)"/>
+
+  <path d="M320 82 496 146v138c0 126-70 214-176 274C214 498 144 410 144 284V146L320 82Z" fill="#0b1730" stroke="url(#shieldGradient)" stroke-width="28" stroke-linejoin="round" filter="url(#softGlow)"/>
+  <path d="M320 118 462 170v112c0 99-52 174-142 227-90-53-142-128-142-227V170l142-52Z" fill="none" stroke="#1d3156" stroke-width="10" stroke-linejoin="round" opacity="0.82"/>
+
+  <path d="M182 320a138 138 0 0 1 138-138" fill="none" stroke="#66e6ff" stroke-width="15" stroke-linecap="round" opacity="0.92"/>
+  <path d="M458 320a138 138 0 0 1-138 138" fill="none" stroke="#35f2b0" stroke-width="15" stroke-linecap="round" opacity="0.92"/>
+  <path d="M320 144v48M320 448v48M144 320h48M448 320h48" stroke="#26486e" stroke-width="10" stroke-linecap="round"/>
+
+  <g filter="url(#softGlow)">
+    <path d="M320 214 414 268v108l-94 54-94-54V268l94-54Z" fill="#071226" stroke="url(#cubeGradient)" stroke-width="18" stroke-linejoin="round"/>
+    <path d="m226 268 94 54 94-54M320 322v108" fill="none" stroke="#dffdf7" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+    <path d="m270 350 34 32 70-78" fill="none" stroke="#35f2b0" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <circle cx="320" cy="182" r="11" fill="#66e6ff"/>
+  <circle cx="458" cy="320" r="11" fill="#35f2b0"/>
+  <circle cx="320" cy="458" r="11" fill="#35f2b0"/>
+  <circle cx="182" cy="320" r="11" fill="#66e6ff"/>
+</svg>

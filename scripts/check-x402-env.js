@@ -30,7 +30,7 @@ if (productionLike && config.cdpAuthRequired && !config.cdpBearerTokenConfigured
   invalid.push(`CDP_API_KEY_SECRET format is unsupported (${secretFormat.format}, decodedBytes=${secretFormat.decodedBytes ?? "n/a"})`);
 }
 
-console.log("AgentSpec x402 environment");
+console.log("DepScout x402 environment");
 console.log(`mode: ${config.mode}`);
 console.log(`enabled: ${config.enabled}`);
 console.log(`facilitatorProvider: ${config.facilitatorProvider}`);

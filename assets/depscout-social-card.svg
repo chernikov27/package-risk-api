@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">DepScout social card</title>
+  <desc id="desc">Brand card for DepScout, a package risk API for coding agents.</desc>
+  <rect width="1200" height="630" fill="#071226"/>
+  <text x="112" y="220" fill="#f8fbff" font-family="Inter, Arial, sans-serif" font-size="88" font-weight="820">DepScout</text>
+  <text x="116" y="296" fill="#35f2b0" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="720">Install decisions for coding agents.</text>
+  <text x="116" y="374" fill="#c6d3e6" font-family="Inter, Arial, sans-serif" font-size="32">Check package risk before npm, pip, or repo install.</text>
+  <path d="M112 462h260l74-62h642" fill="none" stroke="#35f2b0" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

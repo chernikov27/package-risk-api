@@ -1,6 +1,6 @@
 # x402 Production Integration
 
-AgentSpec now targets a Vercel-only MVP:
+DepScout now targets a Vercel-only MVP:
 
 - Next.js App Router route handlers for the landing page and paid API.
 - `src/lib/x402-middleware.ts` for x402 challenge, Coinbase Facilitator verify, handler execution, and settlement.
@@ -41,6 +41,7 @@ See `src/x402-config.js`.
 - `POST /inspect/mcp`: `0.03 USDC`
 - `POST /generate/bazaar-metadata`: `0.05 USDC`
 - `POST /score/agent-readiness`: `0.02 USDC`
+- `POST /risk/package`: `0.02 USDC`
 
 ## Verified Mainnet Smoke
 

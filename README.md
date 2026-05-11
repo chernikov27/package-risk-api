@@ -1,8 +1,10 @@
-# AgentSpec
+# DepScout
 
-**Turn any API into an agent-ready x402 service.**
+**Install decisions for coding agents.**
 
-AgentSpec inspects OpenAPI specs, MCP tools, and API docs, then generates readiness scores, risk notes, recommendations, and x402 Bazaar metadata drafts.
+DepScout is a paid x402 API that checks npm packages, PyPI packages, and GitHub repositories before a coding agent installs a dependency. It returns a compact `safe`, `caution`, or `block` verdict based on public developer-hygiene signals.
+
+The payment environment variable names intentionally keep the existing `AGENTSPEC_*` prefix so the copied x402/CDP setup continues to work.
 
 ## Run Locally
 
@@ -14,10 +16,16 @@ npm run dev
 The Next.js app starts on:
 
 ```text
-http://localhost:3000
+http://localhost:4021
 ```
 
-The Vercel/App Router API routes are available at the same public paths used by agents:
+The main agent-facing route is:
+
+```text
+POST /risk/package
+```
+
+Compatibility routes from the previous copy remain available:
 
 ```text
 /inspect/openapi
@@ -26,53 +34,47 @@ The Vercel/App Router API routes are available at the same public paths used by 
 /score/agent-readiness
 ```
 
-The previous plain Node server is still available for local fallback checks:
-
-```bash
-npm run start:node
-```
-
 ## Test
 
 ```bash
 npm test
 ```
 
-Using portable Node directly:
+Using Node directly:
 
 ```bash
-"/Users/sergejcernikov/Desktop/тест клод/.codex-runtime/node-v24.15.0-darwin-arm64/bin/node" --test
+node --test
 ```
 
 ## Example Calls
 
-Inspect OpenAPI:
+Check an npm package:
 
 ```bash
-curl -s http://localhost:3000/inspect/openapi \
+curl -s http://localhost:4021/risk/package \
   -H 'content-type: application/json' \
-  --data @examples/openapi-weather.json
+  --data '{"ecosystem":"npm","name":"react"}'
 ```
 
-Inspect MCP tools:
+Check a PyPI package:
 
 ```bash
-curl -s http://localhost:3000/inspect/mcp \
+curl -s http://localhost:4021/risk/package \
   -H 'content-type: application/json' \
-  --data @examples/mcp-tools.json
+  --data '{"ecosystem":"pypi","name":"requests"}'
 ```
 
-Generate Bazaar metadata from an existing report:
+Check a GitHub repo:
 
 ```bash
-curl -s http://localhost:3000/generate/bazaar-metadata \
+curl -s http://localhost:4021/risk/package \
   -H 'content-type: application/json' \
-  --data '{"service":{"name":"Weather Utility","path":"/forecast","method":"GET","description":"Read-only forecast lookup for agents."}}'
+  --data '{"ecosystem":"github","repo":"vercel/next.js"}'
 ```
 
 ## Payment Modes
 
-AgentSpec has three runtime modes:
+DepScout has three runtime modes:
 
 - `AGENTSPEC_PAYMENT_MODE=off`: default local demo mode, no paid-route gate.
 - `AGENTSPEC_PAYMENT_MODE=dev-402`: local x402-shaped simulation. Paid routes return `402 Payment Required` unless you pass the dev bypass header.
@@ -101,9 +103,7 @@ npm run check:x402-env
 npm run check:cdp-facilitator
 ```
 
-`AGENTSPEC_PAY_TO` must be a public EVM address you control, for example `0x...` with 40 hex characters after `0x`. `CDP_API_KEY_SECRET` is the CDP Secret API Key value, usually an Ed25519 base64 string; it is not a wallet private key.
-
-For a quick facilitator connectivity check, you can also set a temporary `CDP_BEARER_TOKEN` instead of generating JWTs from `CDP_API_KEY_ID` and `CDP_API_KEY_SECRET`. Bearer tokens expire quickly, so this is useful only for local testing.
+`AGENTSPEC_PAY_TO` must be a public EVM address you control. `CDP_API_KEY_SECRET` is the CDP Secret API Key value, usually an Ed25519 base64 string; it is not a wallet private key.
 
 Local 402 simulation in Next:
 
@@ -117,34 +117,11 @@ Then paid endpoints return `402` unless you pass:
 x-agentspec-dev-payment: paid
 ```
 
-The `402` response includes:
-
-- HTTP status `402 Payment Required`
-- `PAYMENT-REQUIRED` response header with base64-encoded x402 requirements JSON
-- JSON body with `accepts`, price, route, network, and facilitator settings
-
-Run the legacy payment smoke test against the plain Node server with `dev:402:node`:
-
-```bash
-npm run dev:402:node
-npm run smoke:402
-```
-
 Production settlement is implemented in `src/lib/x402-middleware.ts` for Next.js App Router routes and uses the Coinbase CDP Facilitator calls in `src/cdp-facilitator.js`.
 
 ## Vercel Deployment
 
-Deploy this repo as a Next.js project on Vercel. The paid API routes and landing page live in the same app. Function duration is configured in `vercel.json`:
-
-```json
-{
-  "functions": {
-    "src/app/**/route.js": {
-      "maxDuration": 60
-    }
-  }
-}
-```
+Deploy this repo as a Next.js project on Vercel. The paid API routes and landing page live in the same app.
 
 Required production environment variables:
 
@@ -164,23 +141,17 @@ CDP_API_KEY_SECRET=...
 If the legacy Node server startup says:
 
 ```text
-address already in use 127.0.0.1:4020
+address already in use 127.0.0.1:4021
 ```
 
-another AgentSpec server is already running. Use that server, stop the old server with `Ctrl+C`, or start a new one on another port:
+another DepScout server is already running. Use that server, stop it with `Ctrl+C`, or start a temporary server on another port:
 
 ```bash
-PORT=4021 "/Users/sergejcernikov/Desktop/тест клод/.codex-runtime/node-v24.15.0-darwin-arm64/bin/node" src/server.js
+PORT=4022 node src/server.js
 ```
 
 Then test that port:
 
 ```bash
-AGENTSPEC_BASE_URL=http://127.0.0.1:4021 "/Users/sergejcernikov/Desktop/тест клод/.codex-runtime/node-v24.15.0-darwin-arm64/bin/node" scripts/smoke.js
+AGENTSPEC_BASE_URL=http://127.0.0.1:4022 node scripts/smoke.js
 ```
-
-## Project Docs
-
-- `docs/service-plan.md`
-- `docs/x402-integration.md`
-- `Brand/brand-brief.md`

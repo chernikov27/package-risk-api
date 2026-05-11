@@ -135,12 +135,12 @@ export function inspectMcp(input = {}) {
 export function generateBazaarMetadata(input = {}) {
   const sourceReport = input.report ?? null;
   const service = input.service ?? {};
-  const name = service.name ?? sourceReport?.name ?? input.name ?? "AgentSpec Service";
+  const name = service.name ?? sourceReport?.name ?? input.name ?? "DepScout Service";
   const route = service.route ?? input.route ?? firstCandidate(sourceReport);
   const description = service.description
     ?? route?.description
     ?? sourceReport?.summary
-    ?? "Agent-ready API service inspected by AgentSpec.";
+    ?? "Agent-ready API service inspected by DepScout.";
 
   const inputSchema = service.inputSchema ?? route?.inputSchema ?? {
     type: "object",
@@ -459,13 +459,13 @@ function scoreMcp(tools, warnings) {
 function summarizeOpenApi(title, endpoints, score, risks, findings) {
   const highRiskCount = risks.filter(risk => risk.severity === "high").length;
   const weakEndpointCount = endpoints.filter(endpoint => endpoint.agentScore < 65).length;
-  return `${title} has ${endpoints.length} inspected endpoint(s), an AgentSpec score of ${score}, ${weakEndpointCount} endpoint(s) below launch-ready quality, and ${highRiskCount} high-risk signal(s). ${findings.length === 0 ? "It is ready for an x402 Bazaar metadata draft." : "Improve the findings before publishing to agent marketplaces."}`;
+  return `${title} has ${endpoints.length} inspected endpoint(s), a DepScout score of ${score}, ${weakEndpointCount} endpoint(s) below launch-ready quality, and ${highRiskCount} high-risk signal(s). ${findings.length === 0 ? "It is ready for an x402 Bazaar metadata draft." : "Improve the findings before publishing to agent marketplaces."}`;
 }
 
 function summarizeMcp(tools, score, risks) {
   const weakToolCount = tools.filter(tool => tool.agentScore < 65).length;
   const highRiskCount = risks.filter(risk => risk.severity === "high").length;
-  return `MCP inspection found ${tools.length} tool(s), an AgentSpec score of ${score}, ${weakToolCount} tool(s) below launch-ready quality, and ${highRiskCount} high-risk signal(s).`;
+  return `MCP inspection found ${tools.length} tool(s), a DepScout score of ${score}, ${weakToolCount} tool(s) below launch-ready quality, and ${highRiskCount} high-risk signal(s).`;
 }
 
 function buildBazaarCandidate(apiName, endpoint) {

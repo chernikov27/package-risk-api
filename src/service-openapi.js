@@ -1,13 +1,13 @@
 import { X402_ROUTES } from "./x402-config.js";
 
-export function serviceOpenApi(baseUrl = "http://localhost:4020") {
+export function serviceOpenApi(baseUrl = "http://localhost:4021") {
   return {
     openapi: "3.1.0",
     info: {
-      title: "AgentSpec API",
+      title: "DepScout API",
       version: "0.2.0",
-      description: "Inspect OpenAPI specs, MCP tools, and API docs, then generate agent-ready x402 Bazaar metadata.",
-      "x-guidance": "Use AgentSpec when you need to evaluate whether an API or MCP tool surface is ready for autonomous agents. Call POST /inspect/openapi with an OpenAPI document, POST /inspect/mcp with MCP tool metadata, POST /score/agent-readiness for a compact score, or POST /generate/bazaar-metadata to draft an x402 Bazaar listing payload."
+      description: "Check package risk before coding agents install dependencies.",
+      "x-guidance": "Use DepScout before a coding agent installs an npm package, PyPI package, or GitHub repository dependency. Call POST /risk/package with an ecosystem and package name to receive a safe, caution, or block install verdict. Compatibility routes include POST /inspect/openapi for API readiness checks."
     },
     servers: [{ url: baseUrl }],
     paths: {
@@ -28,7 +28,7 @@ export function serviceOpenApi(baseUrl = "http://localhost:4020") {
                     },
                     required: ["ok", "service"]
                   },
-                  example: { ok: true, service: "AgentSpec" }
+                  example: { ok: true, service: "DepScout" }
                 }
               }
             }
@@ -38,7 +38,7 @@ export function serviceOpenApi(baseUrl = "http://localhost:4020") {
       "/x402/routes": {
         get: {
           operationId: "listX402Routes",
-          summary: "List AgentSpec paid route metadata.",
+          summary: "List DepScout paid route metadata.",
           responses: {
             "200": {
               description: "Paid route catalog and current payment configuration.",
@@ -61,7 +61,7 @@ export function serviceOpenApi(baseUrl = "http://localhost:4020") {
             operationId: route.path.replace(/^\//, "").replace(/[^a-z0-9]+/gi, "_"),
             summary: route.description,
             description: `${route.description} Price suggestion: ${route.price} ${route.currency} per call.`,
-            "x-agentspec-pricing": {
+            "x-depscout-pricing": {
               amount: route.price,
               currency: route.currency,
               unit: "per call",
@@ -83,22 +83,20 @@ export function serviceOpenApi(baseUrl = "http://localhost:4020") {
                     type: "object",
                     additionalProperties: true
                   },
-                  example: route.path.includes("openapi")
-                    ? { spec: { openapi: "3.1.0", info: { title: "Example", version: "1.0.0" }, paths: {} } }
-                    : { name: "Example service" }
+                  example: requestExample(route.path)
                 }
               }
             },
             responses: {
               "200": {
-                description: "Inspection result.",
+                description: responseDescription(route.path),
                 content: {
                   "application/json": {
                     schema: {
                       type: "object",
                       additionalProperties: true
                     },
-                    example: { score: 86, grade: "B", recommendations: [] }
+                    example: responseExample(route.path)
                   }
                 }
               },
@@ -144,4 +142,37 @@ export function serviceOpenApi(baseUrl = "http://localhost:4020") {
 
 function fixedUsdAmount(price) {
   return Number(price).toFixed(6);
+}
+
+function requestExample(path) {
+  if (path === "/risk/package") {
+    return { ecosystem: "npm", name: "react" };
+  }
+
+  if (path.includes("openapi")) {
+    return { spec: { openapi: "3.1.0", info: { title: "Example", version: "1.0.0" }, paths: {} } };
+  }
+
+  return { name: "Example service" };
+}
+
+function responseDescription(path) {
+  return path === "/risk/package" ? "Package risk install decision." : "Inspection result.";
+}
+
+function responseExample(path) {
+  if (path === "/risk/package") {
+    return {
+      type: "package-risk",
+      service: "DepScout",
+      ecosystem: "npm",
+      name: "react",
+      verdict: "safe",
+      score: 94,
+      recommendation: "Install may proceed without extra user confirmation.",
+      topReasons: []
+    };
+  }
+
+  return { score: 86, grade: "B", recommendations: [] };
 }

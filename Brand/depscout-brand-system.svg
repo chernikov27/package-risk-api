@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">DepScout brand system</title>
+  <desc id="desc">Logo, colors, and typography direction for DepScout.</desc>
+  <rect width="1200" height="900" fill="#071226"/>
+  <rect x="64" y="64" width="1072" height="772" rx="36" fill="#0b1730" stroke="#1d3156" stroke-width="2"/>
+  <text x="128" y="190" fill="#f8fbff" font-family="Inter, Arial, sans-serif" font-size="82" font-weight="820">DepScout</text>
+  <text x="132" y="254" fill="#35f2b0" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="720">Install decisions for coding agents.</text>
+  <text x="132" y="330" fill="#c6d3e6" font-family="Inter, Arial, sans-serif" font-size="26">A paid package-risk API for npm, PyPI, and GitHub dependency checks.</text>
+  <g transform="translate(132 430)">
+    <rect width="180" height="120" rx="16" fill="#071226" stroke="#244066"/>
+    <rect x="212" width="180" height="120" rx="16" fill="#66e6ff"/>
+    <rect x="424" width="180" height="120" rx="16" fill="#35f2b0"/>
+    <rect x="636" width="180" height="120" rx="16" fill="#ffb84d"/>
+    <text y="160" fill="#c6d3e6" font-family="Inter, Arial, sans-serif" font-size="20">Deep #071226</text>
+    <text x="212" y="160" fill="#c6d3e6" font-family="Inter, Arial, sans-serif" font-size="20">Signal Blue #66e6ff</text>
+    <text x="424" y="160" fill="#c6d3e6" font-family="Inter, Arial, sans-serif" font-size="20">Mint #35f2b0</text>
+    <text x="636" y="160" fill="#c6d3e6" font-family="Inter, Arial, sans-serif" font-size="20">Amber #ffb84d</text>
+  </g>
+  <text x="132" y="708" fill="#f8fbff" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="780">Voice</text>
+  <text x="132" y="758" fill="#c6d3e6" font-family="Inter, Arial, sans-serif" font-size="24">Developer hygiene, not legal compliance. Short verdicts agents can act on.</text>
+</svg>

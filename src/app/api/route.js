@@ -6,9 +6,9 @@ export const maxDuration = 60;
 
 export function GET() {
   return jsonResponse({
-    name: "AgentSpec",
-    slogan: "Turn any API into an agent-ready x402 service.",
-    endpoints: ["/inspect/openapi", "/inspect/mcp", "/generate/bazaar-metadata", "/score/agent-readiness"],
+    name: "DepScout",
+    slogan: "Install decisions for coding agents.",
+    endpoints: ["/risk/package", "/inspect/openapi", "/inspect/mcp", "/generate/bazaar-metadata", "/score/agent-readiness"],
     docs: "/openapi.json"
   });
 }

@@ -1,50 +1,52 @@
-# AgentSpec Service Plan
+# DepScout Service Plan
 
 ## Goal
 
-Build AgentSpec as a paid x402 service that helps developers convert APIs, OpenAPI specs, and MCP tools into agent-ready service listings.
+Build DepScout as a paid x402 package-risk API for coding agents.
 
 ## Product Promise
 
-**Turn any API into an agent-ready x402 service.**
+**Install decisions for coding agents.**
 
-AgentSpec returns structured inspection reports that an AI agent or API developer can use immediately:
+DepScout returns a compact install decision that an IDE agent, repo bot, or CI workflow can use before adding a dependency:
 
-- agent-readiness score
-- endpoint/tool inventory
-- missing schema and description findings
-- side-effect/risk signals
-- recommended fixes
-- x402 Bazaar metadata draft
+- `safe`, `caution`, or `block` verdict
+- score and top reasons
+- license metadata
+- last release or repository activity
+- maintainer/owner signals
+- deprecation/yanked/vulnerability signals where public metadata exposes them
+- install-size and dependency-footprint hints
+- typosquat suspicion
 
 ## MVP Endpoints
 
 | Endpoint | Price | Purpose |
 | --- | ---: | --- |
-| `POST /inspect/openapi` | `0.03 USDC` | Inspect an OpenAPI spec and generate endpoint-level readiness report. |
-| `POST /inspect/mcp` | `0.03 USDC` | Inspect MCP tools and detect schema, clarity, and risk gaps. |
-| `POST /generate/bazaar-metadata` | `0.05 USDC` | Generate a Bazaar listing draft from a report or service description. |
-| `POST /score/agent-readiness` | `0.02 USDC` | Return a compact score for cheaper high-volume usage. |
+| `POST /risk/package` | `0.02 USDC` | Check npm, PyPI, or GitHub package risk before install. |
+| `GET /x402/routes` | free | Return paid route metadata and current payment configuration. |
+| `GET /openapi.json` | free | Return machine-readable API discovery metadata. |
+
+Compatibility routes from the original copy remain available until removed in a later cleanup pass:
+
+| Endpoint | Price | Purpose |
+| --- | ---: | --- |
+| `POST /inspect/openapi` | `0.03 USDC` | Legacy API readiness inspection. |
+| `POST /inspect/mcp` | `0.03 USDC` | Legacy MCP tool inspection. |
+| `POST /generate/bazaar-metadata` | `0.05 USDC` | Legacy Bazaar metadata draft generation. |
+| `POST /score/agent-readiness` | `0.02 USDC` | Legacy compact readiness score. |
 
 ## First Customer
 
-The first buyer is a developer building or listing x402 endpoints. They pay because AgentSpec saves time and improves the chance that agents can discover, understand, and safely call their service.
+The first buyer is a developer or team using coding agents that can install dependencies. They pay because DepScout turns an uncertain install into a cheap, machine-readable decision.
 
 ## Non-Goals
 
-- Full security audit
-- Legal/compliance scoring
+- Legal compliance advice
+- Guaranteed malware detection
+- Full enterprise SCA replacement
 - KYC, sanctions, or regulated-finance validation
-- Guaranteed correctness of third-party API behavior
 - Replacing x402 facilitator/payment infrastructure
-
-## Build Strategy
-
-1. Keep inspection logic dependency-free and testable.
-2. Run local service without wallet/payment for development.
-3. Add dev-only `402` simulation for UX testing.
-4. Use official x402 SDK middleware for production settlement.
-5. Register discoverable resources through Bazaar metadata after settlement works.
 
 ## Payment Modes
 
@@ -64,4 +66,4 @@ This does not settle real x402 payments.
 
 `AGENTSPEC_PAYMENT_MODE=x402`
 
-Reserved for production adapter. The no-dependency dev server intentionally returns `501` in this mode so we do not pretend to settle payments.
+Production-like mode. Next.js App Router routes verify and settle through the configured x402 facilitator.

@@ -5,8 +5,8 @@ export default function HomePage() {
     <>
       <header className="topbar">
         <a className="brand" href="/">
-          <span className="brand-mark" aria-hidden="true" />
-          <span className="brand-word">Agent<span>Spec</span></span>
+          <img className="brand-logo" src="/assets/depscout-logo.svg" alt="" />
+          <span className="brand-word">Dep<span>Scout</span></span>
         </a>
         <nav className="nav" aria-label="Primary">
           <a href="#reports">Reports</a>
@@ -17,67 +17,62 @@ export default function HomePage() {
       </header>
 
       <main>
-        <section className="hero">
-          <div className="radar-field" aria-hidden="true">
-            <span className="ring r1" />
-            <span className="ring r2" />
-            <span className="ring r3" />
-            <span className="axis a1" />
-            <span className="axis a2" />
-            <span className="radar-node n1" />
-            <span className="radar-node n2" />
-            <span className="radar-node n3" />
-            <span className="radar-node n4" />
-          </div>
+        <section className="hero report-first-hero">
           <div className="hero-copy">
-            <div className="hero-mark" aria-hidden="true"><span className="brand-mark" /></div>
-            <p className="eyebrow">Discoverable. Understandable. Paid.</p>
-            <h1>AgentSpec makes APIs ready for autonomous agents.</h1>
-            <div className="trust-badges" aria-label="AgentSpec trust signals">
-              <span className="trust-badge">Listed on Coinbase x402 Bazaar</span>
-              <span className="trust-badge">AgentCash-ready</span>
+            <div className="hero-lockup">
+              <img className="hero-logo" src="/assets/depscout-logo.svg" alt="" />
+              <span>Dep<span>Scout</span></span>
             </div>
-            <p className="support">A paid x402 microservice that scores endpoints, normalizes tool schemas, flags risk, and drafts Bazaar listings agents can evaluate.</p>
+            <p className="eyebrow">Package risk API</p>
+            <h1>Install decisions for coding agents.</h1>
+            <div className="trust-badges" aria-label="DepScout trust signals">
+              <span className="trust-badge">x402 paid route</span>
+              <span className="trust-badge">npm, PyPI, GitHub</span>
+            </div>
+            <p className="support">Check npm, PyPI, or GitHub risk before an agent changes dependencies. DepScout returns one compact verdict: safe, caution, or block.</p>
             <div className="hero-actions">
-              <a className="button primary" href="#inspect">Inspect an API</a>
-              <a className="button secondary" href="#reports">View example report</a>
+              <a className="button primary" href="#inspect">Check a package</a>
+              <a className="button secondary" href="#reports">View install verdict</a>
             </div>
           </div>
 
-          <div className="dashboard-board" id="reports" aria-label="Example AgentSpec report">
+          <div className="dashboard-board report-panel" id="reports" aria-label="DepScout risk report preview">
             <div className="board-top">
-              <div><span className="status-dot" />Weather Utility API</div>
-              <strong>Score 100 / Grade A</strong>
+              <div><span className="status-dot" />npm: react</div>
+              <strong>safe / 94</strong>
             </div>
             <div className="score-grid">
-              <div className="score-dial">100</div>
+              <div className="score-ring">
+                <span>94</span>
+                <small>risk score</small>
+              </div>
               <div className="readiness-bars">
-                <label>Discoverability<i style={{ "--w": "98%" }} /></label>
-                <label>Schema quality<i style={{ "--w": "100%" }} /></label>
-                <label>Safety notes<i style={{ "--w": "88%" }} /></label>
-                <label>Examples<i style={{ "--w": "96%" }} /></label>
+                <label>License clarity<i style={{ "--w": "98%" }} /></label>
+                <label>Maintainer activity<i style={{ "--w": "93%" }} /></label>
+                <label>Release freshness<i style={{ "--w": "88%" }} /></label>
+                <label>Install surface<i style={{ "--w": "84%" }} /></label>
               </div>
             </div>
             <div className="endpoint-table">
-              <div><span>GET</span><strong>/forecast</strong><em>low risk</em><b>candidate</b></div>
-              <div><span>POST</span><strong>/inspect/mcp</strong><em>flags destructive tools</em><b>0.03 USDC</b></div>
-              <div><span>POST</span><strong>/generate/bazaar-metadata</strong><em>listing draft</em><b>0.05 USDC</b></div>
+              <div><span>license</span><strong>MIT</strong><em>clear</em><b>safe</b></div>
+              <div><span>activity</span><strong>recent</strong><em>healthy</em><b>safe</b></div>
+              <div><span>decision</span><strong>allow</strong><em>show to agent</em><b>safe</b></div>
             </div>
           </div>
         </section>
 
-        <section className="feature-band" aria-label="AgentSpec workflow">
+        <section className="feature-band" aria-label="DepScout workflow">
           <div>
-            <span>Inspect</span>
-            <strong>OpenAPI, MCP, docs</strong>
+            <span>Check</span>
+            <strong>npm, PyPI, GitHub</strong>
           </div>
           <div>
             <span>Score</span>
-            <strong>schema, safety, clarity</strong>
+            <strong>license, activity, red flags</strong>
           </div>
           <div>
-            <span>Publish</span>
-            <strong>x402 Bazaar metadata</strong>
+            <span>Decide</span>
+            <strong>safe, caution, block</strong>
           </div>
         </section>
 
@@ -85,12 +80,13 @@ export default function HomePage() {
           <div className="workspace-header">
             <div>
               <p className="eyebrow">Live local demo</p>
-              <h2>Inspect agent readiness</h2>
+              <h2>Check dependency risk</h2>
             </div>
             <div className="workspace-actions">
               <div className="tabs" role="tablist" aria-label="Inspection type">
-                <button className="tab active" id="openapiTab" type="button" data-mode="openapi">OpenAPI</button>
-                <button className="tab" id="mcpTab" type="button" data-mode="mcp">MCP</button>
+                <button className="tab active" id="openapiTab" type="button" data-mode="npm">npm</button>
+                <button className="tab" id="mcpTab" type="button" data-mode="pypi">PyPI</button>
+                <button className="tab" type="button" data-mode="github">GitHub</button>
               </div>
               <button className="button secondary compact" id="loadExample" type="button">Load example</button>
             </div>
@@ -106,12 +102,12 @@ export default function HomePage() {
               <div className="result-top">
                 <span>Report</span>
                 <div className="result-actions">
-                  <button className="button secondary compact" id="metadataButton" type="button" disabled>Generate Bazaar Metadata</button>
-                  <button className="button primary compact" id="inspectButton" type="button">Inspect</button>
+                  <button className="button secondary compact" id="metadataButton" type="button" disabled>Copy JSON</button>
+                  <button className="button primary compact" id="inspectButton" type="button">Check</button>
                 </div>
               </div>
               <div className="report-shell" id="resultOutput">
-                <p className="empty-state">Load the example or paste an OpenAPI/MCP payload, then run inspection.</p>
+                <p className="empty-state">Load the example or paste a package target, then run DepScout.</p>
               </div>
             </div>
           </div>
@@ -119,24 +115,24 @@ export default function HomePage() {
 
         <section className="launchpad">
           <div className="section-copy">
-            <p className="eyebrow">Bazaar launchpad</p>
-            <h2>Prepare clean x402 listings before agents ever call you.</h2>
-            <p>AgentSpec separates launch-ready resources from risky tools, then packages the strongest candidate into a listing draft with schema, output example, tags, and price.</p>
+            <p className="eyebrow">Before install</p>
+            <h2>Give coding agents one install verdict before dependency changes.</h2>
+            <p>DepScout turns public registry and repository metadata into a compact decision agents can show before running package manager commands.</p>
           </div>
           <div className="listing-cloud" aria-label="Bazaar listing examples">
             <article className="listing-card featured">
-              <span className="badge">Verified candidate</span>
-              <h3>Weather Utility API</h3>
-              <p>Read-only forecast lookup for agents.</p>
+              <span className="badge">Safe verdict</span>
+              <h3>npm: react</h3>
+              <p>Clear license, recent release activity, and established maintainer surface.</p>
               <dl>
-                <div><dt>Method</dt><dd>GET /forecast</dd></div>
-                <div><dt>Price</dt><dd>0.03 USDC / call</dd></div>
+                <div><dt>Route</dt><dd>POST /risk/package</dd></div>
+                <div><dt>Price</dt><dd>0.02 USDC / call</dd></div>
               </dl>
             </article>
             <article className="listing-card">
-              <span className="badge warning">Risk note</span>
-              <h3>delete_branch</h3>
-              <p>Excluded from launch candidates until confirmation rules are explicit.</p>
+              <span className="badge warning">Caution verdict</span>
+              <h3>lookalike package</h3>
+              <p>Similar name to a popular dependency, missing license, or stale release activity.</p>
             </article>
           </div>
         </section>
@@ -144,39 +140,39 @@ export default function HomePage() {
         <section className="routes" id="routes">
           <div className="section-copy narrow">
             <p className="eyebrow">Paid route plan</p>
-            <h2>Small calls, clear prices.</h2>
-            <p>AgentSpec is designed as a microservice surface: each route returns a complete agent-readable artifact in one paid request.</p>
+            <h2>Small checks, clear prices.</h2>
+            <p>DepScout is designed as a microservice surface: each call returns a machine-readable install decision.</p>
           </div>
           <div className="route-grid">
-            <article><span>POST</span><strong>/inspect/openapi</strong><em>0.03 USDC</em></article>
-            <article><span>POST</span><strong>/inspect/mcp</strong><em>0.03 USDC</em></article>
-            <article><span>POST</span><strong>/generate/bazaar-metadata</strong><em>0.05 USDC</em></article>
-            <article><span>POST</span><strong>/score/agent-readiness</strong><em>0.02 USDC</em></article>
+            <article><span>POST</span><strong>/risk/package</strong><em>0.02 USDC</em></article>
+            <article><span>npm</span><strong>package metadata</strong><em>license, scripts, release</em></article>
+            <article><span>PyPI</span><strong>package metadata</strong><em>yanked, vulnerabilities</em></article>
+            <article><span>GitHub</span><strong>repo metadata</strong><em>activity, license</em></article>
           </div>
         </section>
 
         <section className="features">
           <article>
-            <h3>Agent-readiness scoring</h3>
-            <p>Detect missing operation IDs, weak descriptions, incomplete response schemas, and endpoints that need safer language.</p>
+            <h3>Install verdicts</h3>
+            <p>Return safe, caution, or block decisions that coding agents can use before installing dependencies.</p>
           </article>
           <article>
-            <h3>MCP tool review</h3>
-            <p>Check tool names, descriptions, input schemas, risky verbs, and agent-facing clarity before publishing.</p>
+            <h3>Package hygiene</h3>
+            <p>Check license, last release, maintainer surface, deprecation, yanked releases, and dependency footprint.</p>
           </article>
           <article>
-            <h3>Bazaar metadata drafts</h3>
-            <p>Generate service descriptions, schemas, output examples, tags, and pricing suggestions for x402 listings.</p>
+            <h3>Typosquat suspicion</h3>
+            <p>Flag names that look close to popular packages so agents can ask before adding them to a repo.</p>
           </article>
         </section>
 
         <section className="final-cta">
           <div>
-            <p className="eyebrow">Ready for the paid adapter</p>
-            <h2>Next step: protect these routes with x402.</h2>
-            <p>The local product surface is ready. The production pass connects wallet address, facilitator, network, and real 402 Payment Required responses.</p>
+            <p className="eyebrow">Agent tool ready</p>
+            <h2>Check before your agent installs.</h2>
+            <p>The route is x402-ready and returns compact JSON that IDE agents, CI bots, and repo assistants can consume directly.</p>
           </div>
-          <a className="button primary" href="#inspect">Run the demo</a>
+          <a className="button primary" href="#inspect">Run DepScout</a>
         </section>
       </main>
 

@@ -1,8 +1,8 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "AgentSpec",
-  description: "Turn any API into an agent-ready x402 service."
+  title: "DepScout",
+  description: "Install decisions for coding agents."
 };
 
 export default function RootLayout({ children }) {

@@ -25,6 +25,14 @@ const USDC_EIP712_DOMAIN_BY_NETWORK = {
 export const X402_ROUTES = [
   {
     method: "POST",
+    path: "/risk/package",
+    price: "0.02",
+    currency: "USDC",
+    category: "developer-tools",
+    description: "Check an npm package, PyPI package, or GitHub repo and return a DepScout install verdict."
+  },
+  {
+    method: "POST",
     path: "/inspect/openapi",
     price: "0.03",
     currency: "USDC",
@@ -45,7 +53,7 @@ export const X402_ROUTES = [
     price: "0.05",
     currency: "USDC",
     category: "developer-tools",
-    description: "Generate x402 Bazaar metadata draft from an AgentSpec report or service description."
+    description: "Generate x402 Bazaar metadata draft from a DepScout report or service description."
   },
   {
     method: "POST",
@@ -266,7 +274,7 @@ export function buildPaymentRequirements(request, route, config = paymentConfig(
         maxTimeoutSeconds: config.maxTimeoutSeconds,
         extra: {
           ...defaultAssetEip712Domain(config.network),
-          service: "AgentSpec",
+          service: "DepScout",
           route: `${route.method} ${route.path}`,
           category: route.category,
           currency: route.currency,
@@ -459,6 +467,13 @@ function buildBazaarExtension(route) {
 }
 
 function bazaarInputBodyExample(route) {
+  if (route.path === "/risk/package") {
+    return {
+      ecosystem: "npm",
+      name: "react"
+    };
+  }
+
   if (route.path === "/inspect/openapi") {
     return {
       spec: {
@@ -564,6 +579,19 @@ function bazaarInputBodyExample(route) {
 }
 
 function bazaarOutputExample(route) {
+  if (route.path === "/risk/package") {
+    return {
+      type: "package-risk",
+      service: "DepScout",
+      ecosystem: "npm",
+      name: "react",
+      verdict: "safe",
+      score: 94,
+      recommendation: "Install may proceed without extra user confirmation.",
+      topReasons: []
+    };
+  }
+
   if (route.path === "/generate/bazaar-metadata") {
     return {
       name: "getForecast",
@@ -615,7 +643,7 @@ function inferFacilitatorProvider(facilitatorUrl) {
 
 function resourceUrlFromRequest(request, route) {
   const proto = headerValue(request.headers["x-forwarded-proto"]) || "http";
-  const host = headerValue(request.headers["x-forwarded-host"]) || headerValue(request.headers.host) || "localhost:4020";
+  const host = headerValue(request.headers["x-forwarded-host"]) || headerValue(request.headers.host) || "localhost:4021";
   return `${proto}://${host}${route.path}`;
 }
 

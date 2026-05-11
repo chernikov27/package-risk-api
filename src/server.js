@@ -4,10 +4,11 @@ import { extname, join, normalize } from "node:path";
 import { pathToFileURL } from "node:url";
 import { generateBazaarMetadata, inspectMcp, inspectOpenApi } from "./inspect.js";
 import { loadDotEnv } from "./load-env.js";
+import { assessPackageRisk } from "./package-risk.js";
 import { authorizePayment, findPaidRoute, paymentConfig, settleAuthorizedPayment, X402_ROUTES } from "./x402-config.js";
 import { serviceOpenApi } from "./service-openapi.js";
 
-const DEFAULT_PORT = 4020;
+const DEFAULT_PORT = 4021;
 const MAX_BODY_BYTES = 1_000_000;
 const PUBLIC_DIR = join(process.cwd(), "public");
 
@@ -36,7 +37,7 @@ async function routeRequest(request, response, env) {
   if (method === "GET" && url.pathname === "/health") {
     sendJson(response, 200, {
       ok: true,
-      service: "AgentSpec",
+      service: "DepScout",
       payment: paymentConfig(env)
     });
     return;
@@ -61,9 +62,9 @@ async function routeRequest(request, response, env) {
 
     if (url.pathname === "/") {
       sendJson(response, 200, {
-        name: "AgentSpec",
-        slogan: "Turn any API into an agent-ready x402 service.",
-        endpoints: ["/inspect/openapi", "/inspect/mcp", "/generate/bazaar-metadata", "/score/agent-readiness"],
+        name: "DepScout",
+        slogan: "Install decisions for coding agents.",
+        endpoints: ["/risk/package", "/inspect/openapi", "/inspect/mcp", "/generate/bazaar-metadata", "/score/agent-readiness"],
         docs: "/openapi.json"
       });
       return;
@@ -72,9 +73,9 @@ async function routeRequest(request, response, env) {
 
   if (method === "GET" && url.pathname === "/api") {
     sendJson(response, 200, {
-      name: "AgentSpec",
-      slogan: "Turn any API into an agent-ready x402 service.",
-      endpoints: ["/inspect/openapi", "/inspect/mcp", "/generate/bazaar-metadata", "/score/agent-readiness"],
+      name: "DepScout",
+      slogan: "Install decisions for coding agents.",
+      endpoints: ["/risk/package", "/inspect/openapi", "/inspect/mcp", "/generate/bazaar-metadata", "/score/agent-readiness"],
       docs: "/openapi.json"
     });
     return;
@@ -90,6 +91,12 @@ async function routeRequest(request, response, env) {
   if (method === "POST" && url.pathname === "/inspect/openapi") {
     const body = await readJsonBody(request);
     await sendPaidJson(response, 200, inspectOpenApi(body), payment);
+    return;
+  }
+
+  if (method === "POST" && url.pathname === "/risk/package") {
+    const body = await readJsonBody(request);
+    await sendPaidJson(response, 200, await assessPackageRisk(body), payment);
     return;
   }
 
@@ -234,7 +241,7 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
 
   server.on("error", error => {
     if (error.code === "EADDRINUSE") {
-      console.error(`AgentSpec API could not start because ${host}:${port} is already in use.`);
+      console.error(`DepScout API could not start because ${host}:${port} is already in use.`);
       console.error("Use the already-running server, stop it with Ctrl+C, or start this one with a different PORT.");
       process.exit(1);
     }
@@ -244,6 +251,6 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   });
 
   server.listen(port, host, () => {
-    console.log(`AgentSpec API listening on http://${host}:${port}`);
+    console.log(`DepScout API listening on http://${host}:${port}`);
   });
 }

@@ -1,8 +1,8 @@
-# AgentSpec Landing Integration Brief
+# DepScout Landing Integration Brief
 
 ## Decision
 
-Do not hand off the whole landing page blindly. The current `public/` demo is already wired to the working AgentSpec API, so the safest path is to integrate the best mockup direction into the existing functional page.
+Do not hand off the whole landing page blindly. The current `public/` demo is already wired to the working DepScout API, so the safest path is to integrate the best mockup direction into the existing functional page.
 
 Use another agent only for narrow visual polish after the functional merge is complete.
 
@@ -14,45 +14,45 @@ Use another agent only for narrow visual polish after the functional merge is co
 
 ## Recommended Direction
 
-Use **Variant 03 / Report-first SaaS** as the main landing direction.
+Use **Variant 01 / Report-first SaaS** as the main landing direction.
 
 Reason:
 
-- It matches what AgentSpec actually sells: inspection reports and readiness output.
+- It matches what DepScout actually sells: package risk verdicts and install decisions.
 - It naturally leads into the live demo.
 - It is less abstract than the radar/protocol variants.
 - It avoids over-indexing on marketplace visuals before payment integration is live.
 
-Borrow from **Variant 04 / Bazaar launchpad** for the Bazaar metadata/listing section.
+Borrow from **Variant 05 / Bazaar-ready listing** for the route/pricing section.
 
 ## Product Flow
 
 Landing page should follow this order:
 
-1. Hero: AgentSpec + slogan + short value proposition
+1. Hero: DepScout + slogan + short value proposition
 2. Report preview: score, risks, candidates, pricing
-3. Live demo: OpenAPI/MCP tabs wired to real endpoints
-4. Bazaar metadata draft: route, method, price, category, tags, schema preview, copy JSON
-5. Pricing/routes: `/inspect/openapi`, `/inspect/mcp`, `/generate/bazaar-metadata`, `/score/agent-readiness`
+3. Live demo: npm/PyPI/GitHub tabs wired to POST /risk/package
+4. Install decision JSON: verdict, score, reasons, license, activity, copy JSON
+5. Pricing/routes: `/risk/package`
 6. x402 readiness note: paid routes will be enabled with production x402 middleware
 
 ## Copy
 
 Hero:
 
-AgentSpec
+DepScout
 
-Turn any API into an agent-ready x402 service.
+Install decisions for coding agents.
 
-Inspect OpenAPI specs, MCP tools, and API docs. Generate readiness scores, risk notes, launchable Bazaar candidates, and x402 metadata drafts in one call.
+Check package risk before npm, pip, or repo install. Return a compact safe, caution, or block verdict in one call.
 
 Primary CTA:
 
-Inspect an API
+Check a package
 
 Secondary CTA:
 
-View example report
+View install verdict
 
 ## Constraints
 
@@ -61,4 +61,4 @@ View example report
 - Do not show destructive tools as Bazaar candidates.
 - Keep card radius at 8px or less.
 - Avoid a generic landing page with no working product surface.
-- Use the selected AgentSpec logo from `Brand/agentspec-logo-source.png` or `public/assets/agentspec-logo.png`.
+- Use the selected DepScout logo from `Brand/depscout-logo-source.svg` or `public/assets/depscout-logo.svg`.

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">DepScout social card</title>
+  <desc id="desc">Brand card for DepScout, a package risk API for coding agents.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#071226"/>
+      <stop offset="0.58" stop-color="#0b1730"/>
+      <stop offset="1" stop-color="#17213c"/>
+    </linearGradient>
+    <linearGradient id="signal" x1="160" y1="94" x2="1040" y2="536" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#66e6ff"/>
+      <stop offset="0.52" stop-color="#35f2b0"/>
+      <stop offset="1" stop-color="#ffb84d"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <path d="M0 528h1200M0 424h1200M0 320h1200M0 216h1200M0 112h1200" stroke="#ffffff" stroke-width="1" opacity="0.08"/>
+  <path d="M160 126h256l90-74h534M1040 506H784l-90 74H160" fill="none" stroke="url(#signal)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0.84"/>
+  <g transform="translate(112 164)">
+    <rect width="168" height="168" rx="36" fill="#071226" stroke="#244066" stroke-width="2"/>
+    <path d="M84 32 142 66v68l-58 34-58-34V66l58-34z" fill="#0b1730" stroke="url(#signal)" stroke-width="10" stroke-linejoin="round"/>
+    <path d="m26 66 58 34 58-34M84 100v68" fill="none" stroke="#dffdf7" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="m58 126 18 18 42-48" fill="none" stroke="url(#signal)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="326" y="232" fill="#f8fbff" font-family="Inter, Arial, sans-serif" font-size="88" font-weight="820">DepScout</text>
+  <text x="330" y="302" fill="#35f2b0" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="720" letter-spacing="0">Install decisions for coding agents.</text>
+  <text x="330" y="374" fill="#c6d3e6" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="500">Check package risk before npm, pip, or repo install.</text>
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.22" stroke-width="2">
+    <rect x="330" y="430" width="142" height="54" rx="8"/>
+    <rect x="492" y="430" width="142" height="54" rx="8"/>
+    <rect x="654" y="430" width="178" height="54" rx="8"/>
+    <rect x="852" y="430" width="168" height="54" rx="8"/>
+  </g>
+  <text x="374" y="466" fill="#f8fbff" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="700">npm</text>
+  <text x="538" y="466" fill="#f8fbff" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="700">PyPI</text>
+  <text x="692" y="466" fill="#f8fbff" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="700">GitHub</text>
+  <text x="887" y="466" fill="#f8fbff" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="700">x402</text>
+</svg>

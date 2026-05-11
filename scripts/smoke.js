@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-const baseUrl = process.env.AGENTSPEC_BASE_URL ?? "http://127.0.0.1:4020";
+const baseUrl = process.env.AGENTSPEC_BASE_URL ?? "http://127.0.0.1:4021";
 
 async function main() {
   const checks = [
@@ -33,7 +33,7 @@ async function main() {
     const payload = await response.json();
     console.log(`ok ${method} ${path}`);
 
-    if (path === "/health" && payload.service !== "AgentSpec") {
+    if (path === "/health" && payload.service !== "DepScout") {
       throw new Error("Health check returned an unexpected service name.");
     }
     if (path === "/inspect/openapi" && payload.type !== "openapi") {
@@ -44,11 +44,11 @@ async function main() {
     }
   }
 
-  console.log(`AgentSpec smoke test passed at ${baseUrl}`);
+  console.log(`DepScout smoke test passed at ${baseUrl}`);
 }
 
 main().catch(error => {
-  console.error(`AgentSpec smoke test failed: ${error.message}`);
+  console.error(`DepScout smoke test failed: ${error.message}`);
   console.error("Start the server in another terminal first, then rerun this command.");
   process.exit(1);
 });

@@ -1,12 +1,12 @@
 import { readFile } from "node:fs/promises";
 
-const baseUrl = process.env.AGENTSPEC_BASE_URL ?? "http://127.0.0.1:4020";
+const baseUrl = process.env.AGENTSPEC_BASE_URL ?? "http://127.0.0.1:4021";
 const sampleBody = JSON.parse(await readFile("examples/openapi-weather.json", "utf8"));
 
 async function main() {
   const routes = await fetchJson("GET", "/x402/routes");
-  if (!routes.routes?.some(route => route.path === "/inspect/openapi")) {
-    throw new Error("/x402/routes did not include /inspect/openapi.");
+  if (!routes.routes?.some(route => route.path === "/risk/package")) {
+    throw new Error("/x402/routes did not include /risk/package.");
   }
   console.log("ok GET /x402/routes");
 
@@ -52,7 +52,7 @@ async function main() {
     throw new Error("Dev paid request returned unexpected payload.");
   }
   console.log("ok POST /inspect/openapi accepts dev paid header");
-  console.log(`AgentSpec payment smoke test passed at ${baseUrl}`);
+  console.log(`DepScout payment smoke test passed at ${baseUrl}`);
 }
 
 async function fetchJson(method, path) {
@@ -64,7 +64,7 @@ async function fetchJson(method, path) {
 }
 
 main().catch(error => {
-  console.error(`AgentSpec payment smoke test failed: ${error.message}`);
+  console.error(`DepScout payment smoke test failed: ${error.message}`);
   console.error("Start the server with AGENTSPEC_PAYMENT_MODE=dev-402 in another terminal first, then rerun this command.");
   process.exit(1);
 });
