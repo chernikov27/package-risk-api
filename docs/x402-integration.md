@@ -45,13 +45,7 @@ See `src/x402-config.js`.
 
 ## Verified Mainnet Smoke
 
-The local implementation has been tested end to end on Base mainnet:
-
-- payer: `REDACTED_PAYER_ADDRESS`
-- payTo: `REDACTED_PAYTO_ADDRESS`
-- route: `POST /inspect/openapi`
-- amount: `0.03 USDC`
-- transaction: `REDACTED_TX_HASH`
+The local implementation has been tested end to end on Base mainnet against `POST /inspect/openapi` for `0.03 USDC`. Full transaction details kept out of version control.
 
 ## Vercel Notes
 
