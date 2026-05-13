@@ -11,7 +11,7 @@ type PaidRouteHandler = (body: Record<string, unknown>) => Promise<JsonBody> | J
 const CORS_HEADERS = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET,POST,OPTIONS",
-  "access-control-allow-headers": "content-type,x-agentspec-dev-payment,payment-signature,x-payment",
+  "access-control-allow-headers": "content-type,x-depscout-dev-payment,payment-signature,x-payment",
   "access-control-expose-headers": "payment-required,payment-response"
 };
 

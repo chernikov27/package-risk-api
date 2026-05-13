@@ -7,7 +7,7 @@ export const PAYMENT_SIGNATURE_HEADER = "PAYMENT-SIGNATURE";
 export const CDP_FACILITATOR_URL = "https://api.cdp.coinbase.com/platform/v2/x402";
 export const X402_ORG_TESTNET_FACILITATOR_URL = "https://x402.org/facilitator";
 
-const DEFAULT_NETWORK = "eip155:84532";
+const DEFAULT_NETWORK = "eip155:8453";
 const DEFAULT_FACILITATOR_URL = CDP_FACILITATOR_URL;
 const DEFAULT_ASSET_SYMBOL = "USDC";
 const DEFAULT_ASSET_DECIMALS = 6;
@@ -70,7 +70,7 @@ export function findPaidRoute(method, pathname) {
 }
 
 export function paymentMode(env = process.env) {
-  const rawMode = String(env.AGENTSPEC_PAYMENT_MODE ?? "off").toLowerCase();
+  const rawMode = String(env.DEPSCOUT_PAYMENT_MODE ?? "off").toLowerCase();
   if (rawMode === "1" || rawMode === "true" || rawMode === "enabled") return "on";
   if (rawMode === "0" || rawMode === "false" || rawMode === "disabled") return "off";
   if (["off", "dev-402", "on", "x402"].includes(rawMode)) return rawMode;
@@ -83,17 +83,17 @@ export function paymentEnabled(env = process.env) {
 
 export function paymentConfig(env = process.env) {
   const mode = paymentMode(env);
-  const facilitatorUrl = env.AGENTSPEC_X402_FACILITATOR_URL ?? DEFAULT_FACILITATOR_URL;
-  const facilitatorProvider = env.AGENTSPEC_X402_FACILITATOR_PROVIDER ?? inferFacilitatorProvider(facilitatorUrl);
+  const facilitatorUrl = env.DEPSCOUT_X402_FACILITATOR_URL ?? DEFAULT_FACILITATOR_URL;
+  const facilitatorProvider = env.DEPSCOUT_X402_FACILITATOR_PROVIDER ?? inferFacilitatorProvider(facilitatorUrl);
   const cdpApiKeyIdConfigured = Boolean(env.CDP_API_KEY_ID);
   const cdpApiKeySecretConfigured = Boolean(env.CDP_API_KEY_SECRET);
   const cdpBearerTokenConfigured = Boolean(env.CDP_BEARER_TOKEN);
-  const network = env.AGENTSPEC_X402_NETWORK ?? DEFAULT_NETWORK;
+  const network = env.DEPSCOUT_X402_NETWORK ?? DEFAULT_NETWORK;
 
   return {
     mode,
     enabled: mode !== "off",
-    payTo: env.AGENTSPEC_PAY_TO ?? "",
+    payTo: env.DEPSCOUT_PAY_TO ?? "",
     network,
     facilitatorUrl,
     facilitatorProvider,
@@ -101,11 +101,11 @@ export function paymentConfig(env = process.env) {
     cdpApiKeysConfigured: cdpApiKeyIdConfigured && cdpApiKeySecretConfigured,
     cdpBearerTokenConfigured,
     cdpAuthConfigured: cdpBearerTokenConfigured || (cdpApiKeyIdConfigured && cdpApiKeySecretConfigured),
-    asset: env.AGENTSPEC_X402_ASSET ?? defaultAssetForNetwork(network),
-    assetSymbol: env.AGENTSPEC_X402_ASSET_SYMBOL ?? DEFAULT_ASSET_SYMBOL,
-    assetDecimals: Number(env.AGENTSPEC_X402_ASSET_DECIMALS ?? DEFAULT_ASSET_DECIMALS),
-    x402Version: Number(env.AGENTSPEC_X402_VERSION ?? DEFAULT_X402_VERSION),
-    maxTimeoutSeconds: Number(env.AGENTSPEC_X402_TIMEOUT_SECONDS ?? DEFAULT_TIMEOUT_SECONDS)
+    asset: env.DEPSCOUT_X402_ASSET ?? defaultAssetForNetwork(network),
+    assetSymbol: env.DEPSCOUT_X402_ASSET_SYMBOL ?? DEFAULT_ASSET_SYMBOL,
+    assetDecimals: Number(env.DEPSCOUT_X402_ASSET_DECIMALS ?? DEFAULT_ASSET_DECIMALS),
+    x402Version: Number(env.DEPSCOUT_X402_VERSION ?? DEFAULT_X402_VERSION),
+    maxTimeoutSeconds: Number(env.DEPSCOUT_X402_TIMEOUT_SECONDS ?? DEFAULT_TIMEOUT_SECONDS)
   };
 }
 
@@ -119,7 +119,7 @@ export function maybeRequirePayment(request, route, env = process.env) {
   const requirements = buildPaymentRequirements(request, route, config);
   const challengeHeader = encodeBase64Json(requirements);
 
-  if (config.mode === "dev-402" && headerValue(request.headers["x-agentspec-dev-payment"]) === "paid") {
+  if (config.mode === "dev-402" && headerValue(request.headers["x-depscout-dev-payment"]) === "paid") {
     return {
       ok: true,
       headers: {
@@ -267,7 +267,7 @@ export function buildPaymentRequirements(request, route, config = paymentConfig(
         maxAmountRequired: amount,
         amount,
         asset: config.asset,
-        payTo: config.payTo || "set AGENTSPEC_PAY_TO",
+        payTo: config.payTo || "set DEPSCOUT_PAY_TO",
         resource: resourceUrl,
         description: route.description,
         mimeType: "application/json",
@@ -290,7 +290,7 @@ export function buildPaymentRequirements(request, route, config = paymentConfig(
 
 function buildPaymentRequiredBody(route, config, requirements) {
   const devNote = config.mode === "dev-402"
-    ? "Local development payment gate. Retry with header `x-agentspec-dev-payment: paid` to bypass. This is not a real x402 settlement."
+    ? "Local development payment gate. Retry with header `x-depscout-dev-payment: paid` to bypass. This is not a real x402 settlement."
     : "Payment required. Retry with a valid x402 `PAYMENT-SIGNATURE` header after paying the quoted requirement.";
 
   return {

@@ -168,7 +168,7 @@ function sendJson(response, status, body, headers = {}) {
     "content-type": "application/json; charset=utf-8",
     "access-control-allow-origin": "*",
     "access-control-allow-methods": "GET,POST,OPTIONS",
-    "access-control-allow-headers": "content-type,x-agentspec-dev-payment,payment-signature,x-payment",
+    "access-control-allow-headers": "content-type,x-depscout-dev-payment,payment-signature,x-payment",
     "access-control-expose-headers": "payment-required,payment-response",
     ...headers
   });

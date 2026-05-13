@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-const baseUrl = process.env.AGENTSPEC_BASE_URL ?? "http://127.0.0.1:4021";
+const baseUrl = process.env.DEPSCOUT_BASE_URL ?? "http://127.0.0.1:4021";
 const sampleBody = JSON.parse(await readFile("examples/openapi-weather.json", "utf8"));
 
 async function main() {
@@ -17,7 +17,7 @@ async function main() {
   });
 
   if (challenge.status !== 402) {
-    throw new Error(`Expected 402 challenge, received ${challenge.status}. Start the server with AGENTSPEC_PAYMENT_MODE=dev-402.`);
+    throw new Error(`Expected 402 challenge, received ${challenge.status}. Start the server with DEPSCOUT_PAYMENT_MODE=dev-402.`);
   }
 
   const paymentRequired = challenge.headers.get("payment-required");
@@ -35,7 +35,7 @@ async function main() {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      "x-agentspec-dev-payment": "paid"
+      "x-depscout-dev-payment": "paid"
     },
     body: JSON.stringify(sampleBody)
   });
@@ -52,6 +52,39 @@ async function main() {
     throw new Error("Dev paid request returned unexpected payload.");
   }
   console.log("ok POST /inspect/openapi accepts dev paid header");
+
+  // Check /risk/package 402 challenge
+  const riskChallenge = await fetch(`${baseUrl}/risk/package`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ ecosystem: "npm", name: "react" })
+  });
+
+  if (riskChallenge.status !== 402) {
+    throw new Error(`Expected 402 challenge on /risk/package, received ${riskChallenge.status}.`);
+  }
+  console.log("ok POST /risk/package returns 402 challenge");
+
+  // Check /risk/package accepts dev bypass
+  const riskPaid = await fetch(`${baseUrl}/risk/package`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-depscout-dev-payment": "paid"
+    },
+    body: JSON.stringify({ ecosystem: "npm", name: "react" })
+  });
+
+  if (!riskPaid.ok) {
+    throw new Error(`Dev paid request to /risk/package failed with ${riskPaid.status}: ${await riskPaid.text()}`);
+  }
+
+  const riskPayload = await riskPaid.json();
+  if (riskPayload.type !== "package-risk" || !["safe", "caution", "block"].includes(riskPayload.verdict)) {
+    throw new Error(`/risk/package returned unexpected payload: ${JSON.stringify(riskPayload).slice(0, 200)}`);
+  }
+  console.log("ok POST /risk/package accepts dev paid header");
+
   console.log(`DepScout payment smoke test passed at ${baseUrl}`);
 }
 
@@ -65,6 +98,6 @@ async function fetchJson(method, path) {
 
 main().catch(error => {
   console.error(`DepScout payment smoke test failed: ${error.message}`);
-  console.error("Start the server with AGENTSPEC_PAYMENT_MODE=dev-402 in another terminal first, then rerun this command.");
+  console.error("Start the server with DEPSCOUT_PAYMENT_MODE=dev-402 in another terminal first, then rerun this command.");
   process.exit(1);
 });

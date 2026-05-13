@@ -32,22 +32,22 @@ function encodeHeader(value) {
 }
 
 test("payment mode aliases normalize to off/on", () => {
-  assert.equal(paymentMode({ AGENTSPEC_PAYMENT_MODE: "enabled" }), "on");
-  assert.equal(paymentMode({ AGENTSPEC_PAYMENT_MODE: "false" }), "off");
-  assert.equal(paymentMode({ AGENTSPEC_PAYMENT_MODE: "x402" }), "x402");
-  assert.equal(paymentMode({ AGENTSPEC_PAYMENT_MODE: "unknown" }), "off");
+  assert.equal(paymentMode({ DEPSCOUT_PAYMENT_MODE: "enabled" }), "on");
+  assert.equal(paymentMode({ DEPSCOUT_PAYMENT_MODE: "false" }), "off");
+  assert.equal(paymentMode({ DEPSCOUT_PAYMENT_MODE: "x402" }), "x402");
+  assert.equal(paymentMode({ DEPSCOUT_PAYMENT_MODE: "unknown" }), "off");
 });
 
 test("payment mode off allows paid routes without a challenge", () => {
-  const result = maybeRequirePayment(request(), route, { AGENTSPEC_PAYMENT_MODE: "off" });
+  const result = maybeRequirePayment(request(), route, { DEPSCOUT_PAYMENT_MODE: "off" });
   assert.equal(result.ok, true);
 });
 
 test("payment mode on returns an x402 payment challenge without a signature", () => {
   const result = maybeRequirePayment(request(), route, {
-    AGENTSPEC_PAYMENT_MODE: "on",
-    AGENTSPEC_PAY_TO: "0xAgentSpecWallet",
-    AGENTSPEC_X402_NETWORK: "base-sepolia"
+    DEPSCOUT_PAYMENT_MODE: "on",
+    DEPSCOUT_PAY_TO: "0xAgentSpecWallet",
+    DEPSCOUT_X402_NETWORK: "base-sepolia"
   });
 
   assert.equal(result.ok, false);
@@ -77,28 +77,28 @@ test("payment signature is decoded for facilitator verification", () => {
     x402Version: 2,
     accepted: {
       scheme: "exact",
-      network: "eip155:84532",
-      asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      network: "eip155:8453",
+      asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       amount: "30000",
       payTo: "0xAgentSpecWallet"
     },
     payload: { signature: "0x1234" }
   };
   const result = maybeRequirePayment(request({ "payment-signature": encodeHeader(paymentPayload) }), route, {
-    AGENTSPEC_PAYMENT_MODE: "on",
-    AGENTSPEC_PAY_TO: "0xAgentSpecWallet"
+    DEPSCOUT_PAYMENT_MODE: "on",
+    DEPSCOUT_PAY_TO: "0xAgentSpecWallet"
   });
 
   assert.equal(result.ok, true);
   assert.deepEqual(result.paymentPayload, paymentPayload);
   assert.equal(result.paymentRequirements.amount, "30000");
-  assert.equal(result.paymentRequirements.network, "eip155:84532");
+  assert.equal(result.paymentRequirements.network, "eip155:8453");
   assert.ok(result.paymentRequirements.extensions.bazaar);
 });
 
 test("dev-402 mode supports a local paid-header bypass", () => {
-  const result = maybeRequirePayment(request({ "x-agentspec-dev-payment": "paid" }), route, {
-    AGENTSPEC_PAYMENT_MODE: "dev-402"
+  const result = maybeRequirePayment(request({ "x-depscout-dev-payment": "paid" }), route, {
+    DEPSCOUT_PAYMENT_MODE: "dev-402"
   });
 
   assert.equal(result.ok, true);
@@ -111,8 +111,8 @@ test("dev-402 mode supports a local paid-header bypass", () => {
 
 test("payment config exposes enabled route settings", () => {
   const config = paymentConfig({
-    AGENTSPEC_PAYMENT_MODE: "on",
-    AGENTSPEC_PAY_TO: "0xAgentSpecWallet"
+    DEPSCOUT_PAYMENT_MODE: "on",
+    DEPSCOUT_PAY_TO: "0xAgentSpecWallet"
   });
 
   assert.equal(config.enabled, true);
@@ -122,13 +122,13 @@ test("payment config exposes enabled route settings", () => {
   assert.equal(config.facilitatorUrl, "https://api.cdp.coinbase.com/platform/v2/x402");
   assert.equal(config.cdpAuthRequired, true);
   assert.equal(config.cdpApiKeysConfigured, false);
-  assert.equal(config.network, "eip155:84532");
-  assert.equal(config.asset, "0x036CbD53842c5426634e7929541eC2318f3dCF7e");
+  assert.equal(config.network, "eip155:8453");
+  assert.equal(config.asset, "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913");
   assert.equal(config.assetSymbol, "USDC");
 });
 
 test("service OpenAPI exposes AgentCash x402 payment discovery metadata", () => {
-  const document = serviceOpenApi("https://agentspec-one.vercel.app");
+  const document = serviceOpenApi("https://depscout.vercel.app");
   const operation = document.paths["/inspect/openapi"].post;
 
   assert.equal(document.info["x-guidance"].includes("POST /inspect/openapi"), true);

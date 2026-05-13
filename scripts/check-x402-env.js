@@ -9,7 +9,7 @@ const missing = [];
 const productionLike = config.mode === "on" || config.mode === "x402";
 
 if (productionLike && !config.payTo) {
-  missing.push("AGENTSPEC_PAY_TO");
+  missing.push("DEPSCOUT_PAY_TO");
 }
 
 if (productionLike && config.cdpAuthRequired && !config.cdpAuthConfigured && !process.env.CDP_API_KEY_ID) {
@@ -22,7 +22,7 @@ if (productionLike && config.cdpAuthRequired && !config.cdpAuthConfigured && !pr
 
 const invalid = [];
 if (productionLike && config.payTo && !/^0x[a-fA-F0-9]{40}$/u.test(config.payTo)) {
-  invalid.push("AGENTSPEC_PAY_TO must be a 42-character EVM address like 0x...");
+  invalid.push("DEPSCOUT_PAY_TO must be a 42-character EVM address like 0x...");
 }
 
 const secretFormat = describeCdpApiKeySecretFormat(process.env.CDP_API_KEY_SECRET);

@@ -7,3 +7,6 @@ coverage/
 dist/
 *.log
 .vercel
+.next/
+.claude/
+codex-task-mainnet-fix.md

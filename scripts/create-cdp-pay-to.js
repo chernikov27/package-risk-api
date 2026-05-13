@@ -21,7 +21,7 @@ try {
   process.exit(1);
 }
 
-const accountName = process.env.CDP_EVM_ACCOUNT_NAME || "agentspec-pay-to";
+const accountName = process.env.CDP_EVM_ACCOUNT_NAME || "depscout-pay-to";
 const cdp = new CdpClient();
 const account = await cdp.evm.getOrCreateAccount({ name: accountName });
 
@@ -29,4 +29,4 @@ console.log(`Created/found CDP EVM account: ${accountName}`);
 console.log(`Address: ${account.address}`);
 console.log("");
 console.log("Put this in .env:");
-console.log(`AGENTSPEC_PAY_TO=${account.address}`);
+console.log(`DEPSCOUT_PAY_TO=${account.address}`);

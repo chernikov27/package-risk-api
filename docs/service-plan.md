@@ -50,20 +50,20 @@ The first buyer is a developer or team using coding agents that can install depe
 
 ## Payment Modes
 
-`AGENTSPEC_PAYMENT_MODE=off`
+`DEPSCOUT_PAYMENT_MODE=off`
 
 No payment gate. Used for local development and tests.
 
-`AGENTSPEC_PAYMENT_MODE=dev-402`
+`DEPSCOUT_PAYMENT_MODE=dev-402`
 
 Returns a local `402` challenge unless the request includes:
 
 ```http
-x-agentspec-dev-payment: paid
+x-depscout-dev-payment: paid
 ```
 
 This does not settle real x402 payments.
 
-`AGENTSPEC_PAYMENT_MODE=x402`
+`DEPSCOUT_PAYMENT_MODE=x402`
 
 Production-like mode. Next.js App Router routes verify and settle through the configured x402 facilitator.

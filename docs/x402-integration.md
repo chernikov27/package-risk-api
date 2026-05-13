@@ -10,17 +10,17 @@ DepScout now targets a Vercel-only MVP:
 ## Environment
 
 ```bash
-AGENTSPEC_PAYMENT_MODE=on
-AGENTSPEC_PAY_TO=0xYourReceivingWallet
-AGENTSPEC_X402_FACILITATOR_URL=https://api.cdp.coinbase.com/platform/v2/x402
-AGENTSPEC_X402_NETWORK=eip155:8453
-AGENTSPEC_X402_ASSET=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
-AGENTSPEC_X402_ASSET_SYMBOL=USDC
+DEPSCOUT_PAYMENT_MODE=on
+DEPSCOUT_PAY_TO=0xYourReceivingWallet
+DEPSCOUT_X402_FACILITATOR_URL=https://api.cdp.coinbase.com/platform/v2/x402
+DEPSCOUT_X402_NETWORK=eip155:8453
+DEPSCOUT_X402_ASSET=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+DEPSCOUT_X402_ASSET_SYMBOL=USDC
 CDP_API_KEY_ID=...
 CDP_API_KEY_SECRET=...
 ```
 
-`AGENTSPEC_PAY_TO` is the public receiving address. It is not a private key.
+`DEPSCOUT_PAY_TO` is the public receiving address. It is not a private key.
 
 Base mainnet USDC uses EIP-3009 with this EIP-712 domain:
 
