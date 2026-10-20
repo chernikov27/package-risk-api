@@ -2,7 +2,9 @@
 
 **Install decisions for coding agents.**
 
-DepScout is a paid x402 API that checks npm packages, PyPI packages, and GitHub repositories before a coding agent installs a dependency. It returns a compact `safe`, `caution`, or `block` verdict based on public developer-hygiene signals.
+DepScout is an experimental x402-ready API that checks npm packages, PyPI packages, and GitHub repositories before a coding agent installs a dependency. It returns a compact `safe`, `caution`, or `block` verdict based on public developer-hygiene signals.
+
+> **Experimental:** this project is not a security audit service or financial product. Payment integrations are disabled by default; do not use real funds without your own security and operational review.
 
 Payment environment variables use the `DEPSCOUT_*` prefix.
 
